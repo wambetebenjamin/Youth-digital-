@@ -4,6 +4,8 @@
    Photos live in a shared Google Drive folder. Because the site is static,
    every <img data-drive="ID"> is pointed at Google's thumbnail CDN, with a
    graceful fallback chain so a broken link never shows a dead image.
+
+   + Energetic mode: tap-to-flip cards on touch screens.
    ========================================================================== */
 (function ($) {
     "use strict";
@@ -123,6 +125,22 @@
         });
     }
 
+    /* ---------- Flip cards: tap-to-flip where hover doesn't exist ---------- */
+    function flipCards() {
+        var coarse = window.matchMedia("(hover: none), (pointer: coarse)");
+        $(".kz-flip").on("click", function (e) {
+            if (!coarse.matches) { return; }
+            if ($(e.target).closest("a").length) { return; }  // let links work normally
+            $(this).toggleClass("flipped");
+        });
+        $(document).on("click", function (e) {
+            if (!coarse.matches) { return; }
+            if (!$(e.target).closest(".kz-flip").length) {
+                $(".kz-flip.flipped").removeClass("flipped");
+            }
+        });
+    }
+
     /* ---------- Copyright year ---------- */
     function year() { $(".kz-year").text(new Date().getFullYear()); }
 
@@ -147,6 +165,7 @@
         marquee();
         nextFriday();
         galleryFilter();
+        flipCards();
         year();
         tilt();
 

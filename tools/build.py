@@ -1,22 +1,29 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Builds every KIZAZI Phenomenal page.  See tools/build_common.py."""
+"""Builds every KIZAZI Phenomenal page.  See tools/build_common.py.
+
+ENERGETIC MODE (template-structure rerder):
+  index.html follows the BabyCare template section order:
+    hero -> about + play -> flip service cards -> program cards
+    (rate badge / lead row / meta bar) -> circular event cards -> blog ->
+    team -> testimonial carousel -> 4-col footer -> copyright strip.
+  Every inner page opens with a page-header hero + breadcrumbs.
+"""
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from build_common import (REG_URL, MEET_URL, TIKTOK, INSTAGRAM, FACEBOOK,
-                          PHOTOS, photo, page, write, marquee, durl)
+                          PHOTOS, photo, page, write, marquee, durl,
+                          orbs, sparkles, page_header)
 
-# ------------------------------------------------------------------ utils ---
+
 def eyebrow(text):
     return '<span class="kz-eyebrow"><span class="dot"></span>%s</span>' % text
 
-def sec_title(kicker, title):
-    return ('<div class="text-center mb-5"><%s>%s</div>' % (kicker, title))
 
 def heading(ey, title, sub="", center=True):
     al = "text-center mx-auto" if center else ""
     mx = 'style="max-width:760px"' if center else ""
-    sub_h = '<p class="text-muted mt-4 %s">%s</p>' % ("mx-auto", sub) if sub else ""
+    sub_h = '<p class="text-muted mt-4 mx-auto">%s</p>' % sub if sub else ""
     return ('<div class="mb-5 %s" %s>%s<h2 class="display-5 mt-3 kz-section-title">%s</h2>%s</div>'
             % (al, mx, eyebrow(ey), title, sub_h))
 
@@ -24,7 +31,10 @@ def heading(ey, title, sub="", center=True):
 # ================================================================ INDEX =====
 def home():
     hero = """
+        <!-- Hero Start -->
         <section class="kz-hero py-5">
+            %s
+            %s
             <div class="container py-5 position-relative">
                 <div class="row g-5 align-items-center">
                     <div class="col-lg-6">
@@ -65,19 +75,24 @@ def home():
                 </div>
             </div>
         </section>
-""" % (eyebrow("Karibu &mdash; welcome home"), REG_URL, MEET_URL,
+        <!-- Hero End -->
+""" % (orbs(), sparkles(), eyebrow("Karibu &mdash; welcome home"), REG_URL, MEET_URL,
        photo(0, "", "KIZAZI 2026 gathering", w=900), photo(1, "", "Worship night", w=700),
        photo(2, "", "The KIZAZI family", w=700), photo(3, "", "One family", w=700))
 
     about = """
+        <!-- About Start -->
         <section class="py-5 kz-tint">
             <div class="container py-5">
                 <div class="row g-5 align-items-center">
                     <div class="col-lg-5">
-                        <div class="position-relative">
+                        <div class="position-relative kz-play-photo">
                             <div class="kz-photo" style="aspect-ratio:4/5">%s<span class="kz-photo-tag">KIZAZI 2026</span></div>
-                            <div class="kz-photo position-absolute d-none d-md-block" style="width:44%%;right:-24px;bottom:-30px;aspect-ratio:1/1;border:6px solid #fff">%s</div>
-                            <span class="kz-sticker position-absolute" style="top:-16px;left:-10px">this is family &rarr;</span>
+                            <a href="gallery.html" class="kz-play" aria-label="Relive KIZAZI 2026 in the gallery">
+                                <span class="kz-ring kz-ring-lg"><span class="kz-avatar"><i class="fas fa-play"></i></span></span>
+                            </a>
+                            <div class="kz-photo position-absolute d-none d-md-block" style="width:44%%;right:-24px;bottom:-30px;aspect-ratio:1/1;border:6px solid #fff;z-index:4">%s</div>
+                            <span class="kz-sticker position-absolute" style="top:-16px;left:-10px;z-index:4">press play on the memories &rarr;</span>
                         </div>
                     </div>
                     <div class="col-lg-7">
@@ -103,23 +118,12 @@ def home():
                 </div>
             </div>
         </section>
+        <!-- About End -->
 """ % (photo(4, "", "KIZAZI 2026 moment", w=900), photo(5, "", "KIZAZI community", w=600),
        eyebrow("Who we are"), REG_URL)
 
-    stats = """
-        <section class="py-5" style="background:var(--kz-ink)">
-            <div class="container py-4">
-                <div class="row g-4 text-center">
-                    <div class="col-6 col-lg-3 kz-stat"><div class="num kz-count" data-count="500" data-suffix="+">0</div><div class="lbl mt-2">Young people reached</div></div>
-                    <div class="col-6 col-lg-3 kz-stat"><div class="num kz-count" data-count="4">0</div><div class="lbl mt-2">Nations &amp; counting</div></div>
-                    <div class="col-6 col-lg-3 kz-stat"><div class="num kz-count" data-count="52">0</div><div class="lbl mt-2">Fridays a year, online</div></div>
-                    <div class="col-6 col-lg-3 kz-stat"><div class="num kz-count" data-count="1">0</div><div class="lbl mt-2">Mission: make Jesus famous</div></div>
-                </div>
-            </div>
-        </section>
-"""
-
-    ministries = """
+    services = """
+        <!-- Service Start -->
         <section class="py-5">
             <div class="container py-5">
                 %s
@@ -128,56 +132,76 @@ def home():
                 </div>
             </div>
         </section>
+        <!-- Service End -->
 """ % (heading("What we do", "Eight ways we move",
-               "Every ministry is a doorway. Pick one, jump in, and watch God use you."),
-       "".join(ministry_card(m) for m in MINISTRIES))
+               "Every ministry is a doorway. Flip a card over, pick one, jump in, and watch God use you."),
+       "".join(flip_card(m) for m in MINISTRIES))
 
     programs = """
+        <!-- Programs Start -->
         <section class="py-5 kz-tint">
             <div class="container py-5">
                 %s
-                <div class="row g-4">
+                <div class="row g-4 justify-content-center">
                     %s
                 </div>
                 <div class="text-center mt-5"><a href="programs.html" class="btn-kz btn-kz-line">See All Tracks <i class="fas fa-arrow-right"></i></a></div>
             </div>
         </section>
+        <!-- Program End -->
 """ % (heading("Programs", "Tracks that build you",
                "Structured journeys &mdash; not random hangouts. Pick the one that fits your season."),
        "".join(program_card(p) for p in PROGRAMS[:3]))
 
     events = """
+        <!-- Events Start -->
         <section class="py-5">
             <div class="container py-5">
                 %s
-                <div class="row g-4">
+                <div class="row g-4 justify-content-center">
                     %s
                 </div>
             </div>
         </section>
+        <!-- Events End -->
 """ % (heading("Events", "Where we're meeting next",
                "Online every Friday. In person across East Africa throughout the year."),
-       "".join(event_card(e) for e in EVENTS[:3]))
+       "".join(event_card(e) for e in EVENTS))
 
-    gallery = """
-        <section class="py-5" style="background:var(--kz-ink)">
+    blog = """
+        <!-- Blog Start -->
+        <section class="py-5 kz-tint">
             <div class="container py-5">
-                <div class="text-center mb-5">
-                    %s
-                    <h2 class="display-5 mt-3" style="color:#fff">KIZAZI 2026 in frames</h2>
-                    <p class="mt-4" style="color:rgba(255,255,255,.7)">Two days. Hundreds of young people. One fire. Relive it.</p>
-                </div>
-                <div class="row g-3">
+                %s
+                <div class="row g-4 justify-content-center">
                     %s
                 </div>
-                <div class="text-center mt-5"><a href="gallery.html" class="btn-kz btn-kz-gold">Open Full Gallery <i class="fas fa-images"></i></a></div>
+                <div class="text-center mt-5"><a href="blog.html" class="btn-kz btn-kz-line">All Words &amp; Stories <i class="fas fa-arrow-right"></i></a></div>
             </div>
         </section>
-""" % (eyebrow("Gallery"),
-       "".join('<div class="col-6 col-md-4 col-lg-3"><a href="%s" data-lightbox="home-gal" class="kz-photo d-block" style="aspect-ratio:1/1">%s</a></div>'
-               % (durl(i, 1200), photo(i, "", "KIZAZI 2026 moment", w=600)) for i in range(12, 20)))
+        <!-- Blog End -->
+""" % (heading("Word &amp; Stories", "Fresh from the fam",
+               "Devotionals, recaps and real talk to keep you anchored between gatherings."),
+       "".join(post_card(p) for p in POSTS[:3]))
+
+    team = """
+        <!-- Team Start -->
+        <section class="py-5">
+            <div class="container py-5">
+                %s
+                <div class="row g-4 justify-content-center">
+                    %s
+                </div>
+                <div class="text-center mt-5"><a href="team.html" class="btn-kz btn-kz-line">Meet The Serving Teams <i class="fas fa-arrow-right"></i></a></div>
+            </div>
+        </section>
+        <!-- Team End -->
+""" % (heading("Team &amp; Serving", "The hands behind the move",
+               "No celebrities here &mdash; just servants. Find the team where your gift fits."),
+       "".join(team_card(t) for t in TEAMS[:4]))
 
     voices = """
+        <!-- Testimonial Start -->
         <section class="py-5 kz-tint">
             <div class="container py-5">
                 %s
@@ -186,33 +210,14 @@ def home():
                 </div>
             </div>
         </section>
+        <!-- Testimonial End -->
 """ % (heading("Testimonies", "Voices from the fam"),
        "".join(voice_card(v) for v in VOICES))
-
-    cta = """
-        <section class="py-5">
-            <div class="container">
-                <div class="kz-cta p-5 py-5 text-center position-relative">
-                    <div class="position-relative" style="z-index:1">
-                        <span class="kz-badge-live"><span class="dot"></span> Registration open</span>
-                        <h2 class="display-5 mt-4 mb-3" style="color:#fff">Your seat in this generation is waiting.</h2>
-                        <p class="mx-auto mb-4" style="max-width:640px;color:rgba(255,255,255,.85)">
-                        Register today and we'll plug you into the Friday catch-up, a discipleship cell near you,
-                        and a serving team that fits your gift.</p>
-                        <div class="d-flex flex-wrap justify-content-center gap-3">
-                            <a href="%s" target="_blank" rel="noopener" class="btn-kz btn-kz-gold">Register Now <i class="fas fa-arrow-right"></i></a>
-                            <a href="%s" target="_blank" rel="noopener" class="btn-kz btn-kz-ghost"><i class="fas fa-video"></i> Join Friday Live</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-""" % (REG_URL, MEET_URL)
 
     return page("KIZAZI Phenomenal — A Generation On Fire For God",
                 "KIZAZI Phenomenal is a youth ministry movement across East Africa: worship, the Word, real community, purpose and outreach. Join us every Friday online.",
                 "home",
-                hero + marquee() + about + stats + ministries + programs + events + gallery + voices + cta)
+                hero + about + services + programs + events + blog + team + voices)
 
 
 # =============================================================== SHARED =====
@@ -227,59 +232,176 @@ MINISTRIES = [
     ("fas fa-hand-holding-heart", "gold", "Community & Care", "Nobody walks alone. Practical support, counselling referrals and a family that shows up."),
 ]
 
-def ministry_card(m):
+
+def flip_card(m):
+    """BabyCare service card -> 3D flip. Front: icon + title. Back: why + link."""
     icon, tone, title, body = m
-    return ('<div class="col-md-6 col-xl-3"><div class="kz-card h-100 p-4">'
-            '<div class="kz-icon %s mb-3"><i class="%s"></i></div>'
-            '<h4 class="h5">%s</h4><p class="text-muted mb-0 small">%s</p></div></div>'
-            % (tone, icon, title, body))
+    return ('<div class="col-md-6 col-lg-6 col-xl-3"><div class="kz-flip h-100">'
+            '<div class="kz-flip-inner">'
+            '<div class="kz-flip-face kz-flip-front">'
+            '<div class="kz-icon %s"><i class="%s"></i></div>'
+            '<h4 class="h5 mt-3 mb-0">%s</h4>'
+            '<span class="kz-flip-hint mt-3"><i class="fas fa-sync-alt me-1"></i> hover / tap to flip</span>'
+            '</div>'
+            '<div class="kz-flip-face kz-flip-back">'
+            '<h4 class="h5" style="color:#fff">%s</h4>'
+            '<p class="my-3 small">%s</p>'
+            '<a href="%s" target="_blank" rel="noopener" class="btn-kz btn-kz-ghost btn-sm px-4 py-2">Get Involved <i class="fas fa-arrow-right"></i></a>'
+            '</div></div></div></div>'
+            % (tone, icon, title, title, body, REG_URL))
+
 
 PROGRAMS = [
-    (6, "12-week track", "Rooted — Discipleship Track", "From new believer to deep roots: identity, scripture, prayer, spiritual gifts and purpose.",
+    (6, "FREE", "Rooted — Discipleship Track",
+     "From new believer to deep roots: identity, scripture, prayer, spiritual gifts and purpose.",
+     "Discipleship Team", "Track hosts & mentors", "D",
      [("fas fa-users", "Cohorts of 12"), ("fas fa-book", "12 sessions"), ("fas fa-clock", "Weekly")]),
-    (7, "Weekly", "Phenomenal Fridays", "The weekly online family night &mdash; worship, word, wins and real talk. Your anchor for the week.",
+    (7, "WEEKLY", "Phenomenal Fridays",
+     "The weekly online family night &mdash; worship, word, wins and real talk. Your anchor for the week.",
+     "Host Team", "Worship, word & real talk", "P",
      [("fas fa-video", "Google Meet"), ("fas fa-clock", "Fri 8PM EAT"), ("fas fa-globe-africa", "All of EA")]),
-    (8, "Creative", "KIZAZI Creative Lab", "Incubator for musicians, producers, filmmakers, designers and writers who want their craft on God's altar.",
+    (8, "STUDIO", "KIZAZI Creative Lab",
+     "Incubator for musicians, producers, filmmakers, designers and writers who want their craft on God's altar.",
+     "Creative Team", "Producers & storytellers", "C",
      [("fas fa-music", "Music & media"), ("fas fa-users", "Mentored"), ("fas fa-fire", "Showcases")]),
-    (9, "6-month circle", "Mentorship Circle", "Matched 1-on-1 with a mentor for career, studies, business, relationships and faith-in-the-real-world.",
+    (9, "1-ON-1", "Mentorship Circle",
+     "Matched 1-on-1 with a mentor for career, studies, business, relationships and faith-in-the-real-world.",
+     "Mentor Circle", "Older & wiser believers", "M",
      [("fas fa-user-tie", "1-on-1"), ("fas fa-calendar", "6 months"), ("fas fa-briefcase", "Career")]),
-    (10, "On campus", "Campus Ambassadors", "Student-led squads planting KIZAZI cells in schools and universities across the region.",
+    (10, "CAMPUS", "Campus Ambassadors",
+     "Student-led squads planting KIZAZI cells in schools and universities across the region.",
+     "Campus Leads", "Student squads", "C",
      [("fas fa-school", "Schools"), ("fas fa-university", "Campuses"), ("fas fa-flag", "Lead a cell")]),
-    (11, "Seasonal", "Serve East Africa", "Mission and outreach expeditions &mdash; evangelism, community projects and cross-border teams.",
+    (11, "MISSION", "Serve East Africa",
+     "Mission and outreach expeditions &mdash; evangelism, community projects and cross-border teams.",
+     "Outreach Team", "Faith with hands & feet", "S",
      [("fas fa-globe-africa", "Regional"), ("fas fa-hand-holding-heart", "Serve"), ("fas fa-route", "Expeditions")]),
 ]
 
+
 def program_card(p):
-    img, tag, title, body, meta = p
-    meta_html = "".join('<small class="text-muted"><i class="%s me-1" style="color:var(--kz-violet)"></i>%s</small>' % (i, t) for i, t in meta)
-    return ('<div class="col-md-6 col-xl-4"><div class="kz-card h-100">'
-            '<div class="kz-photo" style="aspect-ratio:16/10;border-radius:0">%s<span class="kz-photo-tag">%s</span></div>'
-            '<div class="p-4"><h4 class="h5">%s</h4><p class="text-muted small mb-3">%s</p>'
-            '<div class="d-flex flex-wrap gap-3">%s</div>'
-            '<a href="%s" target="_blank" rel="noopener" class="btn-kz btn-kz-line btn-sm px-3 py-2 mt-3">Join this track</a>'
-            '</div></div></div>' % (photo(img, "", title, w=800), tag, title, body, meta_html, REG_URL))
+    """BabyCare program card: photo + rate badge, lead row (ring avatar),
+    and a dark meta bar of quick facts."""
+    img, rate, title, body, lead, lead_sub, init, meta = p
+    meta_html = "".join('<small><i class="%s me-1" style="color:var(--kz-gold)"></i> %s</small>' % (i, t) for i, t in meta)
+    return ('<div class="col-md-6 col-lg-6 col-xl-4"><div class="kz-card kz-program h-100">'
+            '<div class="kz-program-img">'
+            '<div class="kz-photo" style="aspect-ratio:16/10;border-radius:0">%s</div>'
+            '<span class="kz-rate">%s</span>'
+            '</div>'
+            '<div class="p-4 pb-3"><a href="programs.html" class="h5 kz-title-link">%s</a>'
+            '<p class="text-muted small mt-3 mb-0">%s</p></div>'
+            '<div class="kz-program-lead">'
+            '<span class="kz-ring kz-ring-xs"><span class="kz-avatar"><span class="l">%s</span></span></span>'
+            '<div class="ms-3"><h6 class="mb-0">%s</h6><small class="text-muted">%s</small></div>'
+            '</div>'
+            '<div class="kz-program-meta">%s</div>'
+            '</div></div>' % (photo(img, "", title, w=800), rate, title, body, init, lead, lead_sub, meta_html))
+
 
 EVENTS = [
-    (21, "Weekly", "Phenomenal Friday Catch-Up", "Our whole family on one call &mdash; worship, a short word, updates and prayer. Bring a friend.",
+    (21, "FRI", "Phenomenal Friday Catch-Up", "Our whole family on one call &mdash; worship, a short word, updates and prayer. Bring a friend.",
      "Every Friday", "8:00 PM EAT", "Google Meet", MEET_URL, "Join live"),
-    (22, "Annual", "KIZAZI Conference 2027", "The flagship gathering. Two days of worship, teaching, nights of fire and friendships that outlive the weekend.",
+    (22, "AUG '27", "KIZAZI Conference 2027", "The flagship gathering. Two days of worship, teaching, nights of fire and friendships that outlive the weekend.",
      "August 2027", "Dates soon", "East Africa", REG_URL, "Register"),
-    (23, "Monthly", "Worship & Word Night", "An evening set apart for loud worship and unhurried teaching &mdash; hosted in rotation across our cities.",
+    (23, "MONTHLY", "Worship & Word Night", "An evening set apart for loud worship and unhurried teaching &mdash; hosted in rotation across our cities.",
      "Monthly", "Time TBA", "Rotating city", REG_URL, "Get details"),
-    (24, "Termly", "Campus & School Tour", "We hit campuses and schools with music, message and madness &mdash; and leave a cell behind.",
+    (24, "TERMLY", "Campus & School Tour", "We hit campuses and schools with music, message and madness &mdash; and leave a cell behind.",
      "Each term", "TBA", "Schools & campuses", REG_URL, "Host us"),
 ]
 
+
 def event_card(e):
-    img, tag, title, body, d1, d2, loc, url, cta = e
-    return ('<div class="col-md-6 col-xl-4"><div class="kz-card h-100">'
-            '<div class="kz-photo" style="aspect-ratio:16/10;border-radius:0">%s<span class="kz-photo-tag">%s</span></div>'
-            '<div class="p-4"><h4 class="h5">%s</h4><p class="text-muted small mb-3">%s</p>'
-            '<div class="d-flex flex-column gap-2 small mb-3">'
-            '<span><i class="fas fa-calendar-day me-2" style="color:var(--kz-violet)"></i>%s &bull; %s</span>'
-            '<span><i class="fas fa-map-marker-alt me-2" style="color:var(--kz-magenta)"></i>%s</span></div>'
+    """BabyCare event card: circular photo with lightbox overlay, date chip
+    bridging into the meta bar, then the text block."""
+    img, chip, title, body, d1, d2, loc, url, cta = e
+    return ('<div class="col-md-6 col-lg-6 col-xl-4">'
+            '<div class="kz-card kz-event h-100">'
+            '<div class="kz-event-top">'
+            '<div class="kz-event-img">%s'
+            '<a href="%s" data-lightbox="event-%d" class="kz-event-lb" aria-label="Open photo"><i class="fas fa-search-plus fa-2x text-white"></i></a>'
+            '</div>'
+            '<span class="kz-event-date">%s</span>'
+            '</div>'
+            '<div class="kz-event-bar">'
+            '<small><i class="fas fa-calendar me-1"></i> %s &bull; %s</small>'
+            '<small><i class="fas fa-map-marker-alt me-1"></i> %s</small>'
+            '</div>'
+            '<div class="p-4"><a href="%s" target="_blank" rel="noopener" class="h5 kz-title-link">%s</a>'
+            '<p class="text-muted small mt-3 mb-3">%s</p>'
             '<a href="%s" target="_blank" rel="noopener" class="btn-kz btn-sm px-4 py-2">%s <i class="fas fa-arrow-right"></i></a>'
-            '</div></div></div>' % (photo(img, "", title, w=800), tag, title, body, d1, d2, loc, url, cta))
+            '</div></div></div>'
+            % (photo(img, "", title, w=800), durl(img, 1400), img, chip, d1, d2, loc,
+               url, title, body, url, cta))
+
+
+POSTS = [
+    (30, "Story", "KIZAZI 2026: Two Days That Changed Us",
+     "We arrived as strangers from four nations and left as family. Here's what God did in 48 hours &mdash; and why we're still talking about it.", "4 min read"),
+    (31, "Devotional", "Why We Meet Every Single Friday",
+     "It's not just a call. It's a rhythm of grace that keeps a scattered generation connected, accountable and on fire.", "3 min read"),
+    (32, "Devotional", "3 Ways To Stay On Fire Between Gatherings",
+     "Conferences fade. Cells, scripture and service keep the flame alive on an ordinary Tuesday.", "5 min read"),
+    (33, "Story", "From Audience To Family",
+     "What happens after the altar call? The unglamorous, glorious work of becoming a family that stays.", "4 min read"),
+    (34, "Devotional", "Your Campus Is Your Mission Field",
+     "You don't need a title to be a missionary. You need a lecture hall and a burden.", "3 min read"),
+    (35, "Story", "The Creative Lab Is Raising Storytellers",
+     "Behind every KIZAZI recap is a young creator learning that their craft is an altar.", "4 min read"),
+]
+
+
+def post_card(p):
+    """BabyCare blog card: photo + category chip, light meta bar, then the
+    word itself with the byline row."""
+    img, cat, title, ex, read = p
+    return ('<div class="col-md-6 col-lg-6 col-xl-4"><div class="kz-card kz-post h-100">'
+            '<div class="kz-program-img">'
+            '<div class="kz-photo" style="aspect-ratio:16/10;border-radius:0">%s</div>'
+            '<span class="kz-rate alt">%s</span>'
+            '</div>'
+            '<div class="kz-post-bar">'
+            '<small><i class="fas fa-calendar me-1"></i> KIZAZI 2026 season</small>'
+            '<small><i class="fas fa-clock me-1"></i> %s</small>'
+            '</div>'
+            '<div class="p-4"><a href="blog.html" class="h5 kz-title-link">%s</a>'
+            '<p class="text-muted small mt-3 mb-3">%s</p>'
+            '<div class="d-flex align-items-center justify-content-between">'
+            '<div class="d-flex align-items-center">'
+            '<span class="kz-ring kz-ring-xs"><span class="kz-avatar"><span class="l">K</span></span></span>'
+            '<div class="ms-2"><small class="fw-bold d-block">KIZAZI Team</small><small class="text-muted">Word &amp; Stories</small></div>'
+            '</div>'
+            '<a href="blog.html" class="fw-bold small kz-read">Read <i class="fas fa-arrow-right"></i></a>'
+            '</div></div></div></div>' % (photo(img, "", title, w=800), cat, read, title, ex))
+
+
+TEAMS = [
+    ("fas fa-hands-praying", "Lead & Pastoral Care", "Shepherding the family, teaching the Word and holding the vision.", 36),
+    ("fas fa-music", "Worship Team", "Singers, musicians and technicians leading the family into God's presence.", 37),
+    ("fas fa-clapperboard", "Media & Creative", "Cameras, design, sound and content &mdash; telling our story beautifully.", 38),
+    ("fas fa-hands", "Prayer Team", "The engine room. Interceding for the family, the events and the nations.", 39),
+    ("fas fa-school", "Campus & School Leads", "Student leaders planting and shepherding cells on their campuses.", 40),
+    ("fas fa-mug-hot", "Hospitality & Care", "Welcome desks, follow-ups, counselling referrals and making sure nobody eats alone.", 41),
+]
+
+
+def team_card(t):
+    """BabyCare team card: photo with slide-up action row, role beneath.
+    Role-based on purpose (see NOTES.md) &mdash; no invented names."""
+    icon, title, desc, img = t
+    return ('<div class="col-md-6 col-lg-4 col-xl-3"><div class="kz-card kz-team h-100">'
+            '<div class="kz-team-img">%s'
+            '<div class="kz-team-actions">'
+            '<a href="%s" target="_blank" rel="noopener" class="kz-team-btn" aria-label="Join this team"><i class="fas fa-user-plus"></i></a>'
+            '<a href="team.html" class="kz-team-btn" aria-label="About this team"><i class="%s"></i></a>'
+            '<a href="%s" target="_blank" rel="noopener" class="kz-team-btn" aria-label="See us on Instagram"><i class="fab fa-instagram"></i></a>'
+            '</div></div>'
+            '<div class="text-center p-3">'
+            '<h4 class="h5 mb-1">%s</h4>'
+            '<p class="text-muted small mb-2">%s</p>'
+            '<span class="kz-team-tag">Serving team</span>'
+            '</div></div></div>' % (photo(img, "", title, w=700), REG_URL, icon, INSTAGRAM, title, desc))
+
 
 VOICES = [
     ("A", "Nairobi, KE", "I came for the music and stayed for Jesus. KIZAZI is the first place that felt like home without me having to perform."),
@@ -288,25 +410,38 @@ VOICES = [
     ("J", "Kigali, RW", "I found my purpose in the Creative Lab. Now my camera is my ministry."),
 ]
 
+STARS = '<span class="kz-stars mt-1 d-inline-flex">' + '<i class="fas fa-star"></i>' * 5 + '</span>'
+
+
 def voice_card(v):
     init, loc, quote = v
-    return ('<div class="kz-card p-4 m-2"><div class="p-3">'
+    return ('<div class="kz-card kz-voice p-4 m-2"><div class="p-3 position-relative">'
             '<i class="fa fa-quote-right fa-2x position-absolute" style="top:18px;right:20px;color:rgba(124,58,237,.2)"></i>'
             '<div class="d-flex align-items-center mb-3">'
-            '<span class="d-grid place-items-center rounded-circle text-white fw-bold" style="width:56px;height:56px;background:var(--kz-grad);font-family:Sora,sans-serif">%s</span>'
-            '<div class="ms-3"><h5 class="h6 mb-0">A voice from the fam</h5><small class="text-muted">%s</small></div></div>'
-            '<p class="mb-0 text-muted">%s</p></div></div>' % (init, loc, quote))
+            '<span class="kz-ring"><span class="kz-avatar"><span class="l">%s</span></span></span>'
+            '<div class="ms-3"><h5 class="h6 mb-0">A voice from the fam</h5><small class="text-muted d-block">%s</small>%s</div></div>'
+            '<p class="mb-0 text-muted">%s</p></div></div>' % (init, loc, STARS, quote))
+
+
+def cta_panel(title, sub, btn, url):
+    return ('<div class="kz-cta kz-orb-zone p-5 mt-5 text-center">'
+            + orbs(soft=True) +
+            '<div class="position-relative" style="z-index:1">'
+            '<h3 class="h2 mb-3" style="color:#fff">%s</h3>'
+            '<p class="mb-4" style="color:rgba(255,255,255,.85)">%s</p>'
+            '<a href="%s" target="_blank" rel="noopener" class="btn-kz btn-kz-gold">%s <i class="fas fa-arrow-right"></i></a>'
+            '</div></div>' % (title, sub, url, btn))
 
 
 # =============================================================== ABOUT ======
 def about_page():
-    body = """
+    body = page_header("About Us") + """
         <section class="py-5 kz-tint">
             <div class="container py-5">
                 <div class="row g-5 align-items-center">
                     <div class="col-lg-6">
                         %s
-                        <h1 class="display-4 mt-3">Our story is still<br>being <span class="text-grad">written.</span></h1>
+                        <h2 class="display-4 mt-3">Our story is still<br>being <span class="text-grad">written.</span></h2>
                         <p class="text-muted mt-4">KIZAZI Phenomenal began with a simple conviction: this generation
                         is not a problem to manage &mdash; it's a powerhouse to release. What started as young people
                         gathering to seek God has grown into a family stretching across Kenya, Uganda, Tanzania and
@@ -373,6 +508,7 @@ BELIEFS = [
     ("fas fa-sun", "The Hope", "Jesus is coming back for a radiant, phenomenal generation."),
 ]
 
+
 def belief_card(b):
     icon, t, d = b
     return ('<div class="col-md-6 col-lg-4"><div class="p-4 h-100" style="border:1px solid rgba(255,255,255,.12);border-radius:22px">'
@@ -382,23 +518,20 @@ def belief_card(b):
 
 # ========================================================== MINISTRIES =====
 def ministries_page():
-    body = """
+    body = page_header("Ministries") + """
         <section class="py-5 kz-tint">
             <div class="container py-5">
                 %s
                 <div class="row g-4">%s</div>
-                <div class="kz-cta p-5 mt-5 text-center position-relative">
-                    <div class="position-relative" style="z-index:1">
-                        <h3 class="h2 mb-3" style="color:#fff">Not sure where to plug in?</h3>
-                        <p class="mb-4" style="color:rgba(255,255,255,.85)">Register and tell us your gift &mdash; we'll match you to a team.</p>
-                        <a href="%s" target="_blank" rel="noopener" class="btn-kz btn-kz-gold">Find My Place <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
+                %s
             </div>
         </section>
 """ % (heading("Ministries", "Every gift has a home here",
-               "Eight ministries, one mission. Wherever you're wired, there's a place for you to serve and grow."),
-       "".join(ministry_card(m) for m in MINISTRIES), REG_URL)
+               "Eight ministries, one mission. Flip a card &mdash; wherever you're wired, there's a place for you to serve and grow."),
+       "".join(flip_card(m) for m in MINISTRIES),
+       cta_panel("Not sure where to plug in?",
+                 "Register and tell us your gift &mdash; we'll match you to a team.",
+                 "Find My Place", REG_URL))
     return page("Ministries — KIZAZI Phenomenal",
                 "Worship, discipleship, prayer, outreach, creative arts, mentorship and care: the ministries of KIZAZI Phenomenal.",
                 "ministries", body)
@@ -406,11 +539,11 @@ def ministries_page():
 
 # ============================================================ PROGRAMS =====
 def programs_page():
-    body = """
+    body = page_header("Programs") + """
         <section class="py-5 kz-tint">
             <div class="container py-5">
                 %s
-                <div class="row g-4">%s</div>
+                <div class="row g-4 justify-content-center">%s</div>
             </div>
         </section>
 """ % (heading("Programs", "Pick your track",
@@ -423,7 +556,7 @@ def programs_page():
 
 # ============================================================== EVENTS =====
 def events_page():
-    body = """
+    body = page_header("Events") + """
         <section class="py-5">
             <div class="container py-5">
                 %s
@@ -441,7 +574,7 @@ def events_page():
                     </div>
                     <a href="%s" target="_blank" rel="noopener" class="btn-kz">Join The Call <i class="fas fa-video"></i></a>
                 </div>
-                <div class="row g-4">%s</div>
+                <div class="row g-4 justify-content-center">%s</div>
             </div>
         </section>
 """ % (heading("Events", "Mark your calendar",
@@ -463,7 +596,7 @@ def gallery_page():
         items.append('<div class="col-6 col-md-4 col-lg-3 kz-gallery-item" data-cat="%s">'
                      '<a href="%s" data-lightbox="kz-gal" class="kz-photo d-block" style="aspect-ratio:1/1">%s</a></div>'
                      % (cat, durl(i, 1400), photo(i, "", "KIZAZI moment", w=700)))
-    body = """
+    body = page_header("Gallery") + """
         <section class="py-5">
             <div class="container py-5">
                 %s
@@ -482,35 +615,12 @@ def gallery_page():
 
 
 # ================================================================ BLOG =====
-POSTS = [
-    (30, "Story", "KIZAZI 2026: Two Days That Changed Us",
-     "We arrived as strangers from four nations and left as family. Here's what God did in 48 hours &mdash; and why we're still talking about it."),
-    (31, "Devotional", "Why We Meet Every Single Friday",
-     "It's not just a call. It's a rhythm of grace that keeps a scattered generation connected, accountable and on fire."),
-    (32, "Devotional", "3 Ways To Stay On Fire Between Gatherings",
-     "Conferences fade. Cells, scripture and service keep the flame alive on an ordinary Tuesday."),
-    (33, "Story", "From Audience To Family",
-     "What happens after the altar call? The unglamorous, glorious work of becoming a family that stays."),
-    (34, "Devotional", "Your Campus Is Your Mission Field",
-     "You don't need a title to be a missionary. You need a lecture hall and a burden."),
-    (35, "Story", "The Creative Lab Is Raising Storytellers",
-     "Behind every KIZAZI recap is a young creator learning that their craft is an altar."),
-]
-
-def post_card(p):
-    img, tag, title, ex = p
-    return ('<div class="col-md-6 col-xl-4"><div class="kz-card h-100">'
-            '<div class="kz-photo" style="aspect-ratio:16/10;border-radius:0">%s<span class="kz-photo-tag">%s</span></div>'
-            '<div class="p-4"><h4 class="h5">%s</h4><p class="text-muted small mb-3">%s</p>'
-            '<a href="blog.html" class="fw-bold small" style="color:var(--kz-violet)">Read more <i class="fas fa-arrow-right"></i></a>'
-            '</div></div></div>' % (photo(img, "", title, w=800), tag, title, ex))
-
 def blog_page():
-    body = """
+    body = page_header("Word & Stories") + """
         <section class="py-5 kz-tint">
             <div class="container py-5">
                 %s
-                <div class="row g-4">%s</div>
+                <div class="row g-4 justify-content-center">%s</div>
             </div>
         </section>
 """ % (heading("Word & Stories", "Devotionals, recaps & real talk",
@@ -522,37 +632,26 @@ def blog_page():
 
 
 # ================================================================ TEAM =====
-TEAMS = [
-    ("fas fa-hands-praying", "Lead & Pastoral Care", "Shepherding the family, teaching the Word and holding the vision."),
-    ("fas fa-music", "Worship Team", "Singers, musicians and technicians leading the family into God's presence."),
-    ("fas fa-clapperboard", "Media & Creative", "Cameras, design, sound and content &mdash; telling our story beautifully."),
-    ("fas fa-hands", "Prayer Team", "The engine room. Interceding for the family, the events and the nations."),
-    ("fas fa-school", "Campus & School Leads", "Student leaders planting and shepherding cells on their campuses."),
-    ("fas fa-mug-hot", "Hospitality & Care", "Welcome desks, follow-ups, counselling referrals and making sure nobody eats alone."),
-]
-
 def team_page():
-    cards = "".join(
-        '<div class="col-md-6 col-xl-4"><div class="kz-card h-100 p-4 text-center">'
-        '<div class="kz-icon %s mx-auto mb-3"><i class="%s"></i></div>'
-        '<h4 class="h5">%s</h4><p class="text-muted small mb-3">%s</p>'
-        '<a href="%s" target="_blank" rel="noopener" class="btn-kz btn-kz-line btn-sm px-3 py-2">Join this team</a></div></div>'
-        % (tone, icon, t, d, REG_URL)
-        for (icon, t, d), tone in zip(TEAMS, ["", "gold", "mint", "", "gold", "mint"]))
-    body = """
+    body = page_header("Team & Serving") + """
         <section class="py-5">
             <div class="container py-5">
                 %s
-                <div class="row g-4">%s</div>
+                <div class="row g-4 justify-content-center">%s</div>
                 <div class="kz-verse p-4 mt-5">
                     <p class="mb-0">KIZAZI is served by volunteers &mdash; students, workers, creators and parents' worst
                     nightmares-turned-best-testimonies. Names and faces of our serving team are updated after every
                     commissioning. <strong>Want your name on this page one day? Start by joining a team.</strong></p>
                 </div>
+                %s
             </div>
         </section>
 """ % (heading("Team & Serving", "The hands behind the move",
-               "No celebrities here &mdash; just servants. Find the team where your gift fits."), cards)
+               "No celebrities here &mdash; just servants. Find the team where your gift fits."),
+       "".join(team_card(t) for t in TEAMS),
+       cta_panel("Ready to pick up a tool?",
+                 "Register and tell us your gift &mdash; we'll plug you into a team this week.",
+                 "Join A Team", REG_URL))
     return page("Team & Serving — KIZAZI Phenomenal",
                 "Serving teams at KIZAZI Phenomenal: worship, media, prayer, campus leads, hospitality and pastoral care.",
                 "team", body)
@@ -560,7 +659,7 @@ def team_page():
 
 # ========================================================= TESTIMONIAL =====
 def testimonial_page():
-    body = """
+    body = page_header("Testimonies") + """
         <section class="py-5 kz-tint">
             <div class="container py-5">
                 %s
@@ -580,7 +679,7 @@ def testimonial_page():
 
 # ============================================================= CONTACT =====
 def contact_page():
-    body = """
+    body = page_header("Contact") + """
         <section class="py-5 kz-tint">
             <div class="container py-5">
                 %s
@@ -653,8 +752,8 @@ def contact_page():
 
 # ================================================================ 404 ======
 def notfound_page():
-    body = """
-        <section class="py-5 kz-tint" style="min-height:70vh;display:flex;align-items:center">
+    body = page_header("Lost, Fam?") + """
+        <section class="py-5 kz-tint" style="min-height:50vh;display:flex;align-items:center">
             <div class="container py-5 text-center">
                 <div class="display-1 text-grad" style="font-size:clamp(5rem,16vw,11rem);line-height:1">404</div>
                 <h2 class="display-6 mt-2">Whoops &mdash; wrong turn, fam.</h2>
@@ -672,7 +771,7 @@ def notfound_page():
 
 # ================================================================ MAIN =====
 def main():
-    print("Building KIZAZI Phenomenal ...")
+    print("Building KIZAZI Phenomenal (energetic mode) ...")
     write("index.html", home())
     write("about.html", about_page())
     write("ministries.html", ministries_page())
@@ -684,7 +783,7 @@ def main():
     write("testimonial.html", testimonial_page())
     write("contact.html", contact_page())
     write("404.html", notfound_page())
-    print("Done.")
+    print("Done. %d pages." % 11)
 
 
 if __name__ == "__main__":
