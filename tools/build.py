@@ -40,8 +40,9 @@ def home():
                     <div class="col-lg-6">
                         %s
                         <h1 class="kz-hero-title mt-4">A generation<br><span class="grad">on fire</span> for God.</h1>
-                        <p class="kz-hero-sub mt-4">KIZAZI Phenomenal is a family of young people across East
-                        Africa discovering Jesus, discovering purpose, and refusing to live small.
+                        <p class="kz-hero-sub mt-4">KIZAZI Phenomenal is a growing network of <strong>ministers&rsquo; kids</strong>
+                        &mdash; united to inspire, serve and impact our generation &mdash; and a family of young
+                        people across East Africa discovering Jesus, discovering purpose, and refusing to live small.
                         Worship that hits. Word that sticks. People who show up for you.</p>
                         <div class="d-flex flex-wrap gap-3 mt-4">
                             <a href="%s" target="_blank" rel="noopener" class="btn-kz">Join The Movement <i class="fas fa-arrow-right"></i></a>
@@ -98,10 +99,11 @@ def home():
                     <div class="col-lg-7">
                         %s
                         <h2 class="display-5 mt-3">We're not a club.<br>We're a <span class="text-grad">generation.</span></h2>
-                        <p class="text-muted mt-4">&ldquo;Kizazi&rdquo; is Swahili for <em>generation</em>. We believe this generation
-                        isn't the &ldquo;church of tomorrow&rdquo; &mdash; we're the church of <strong>right now</strong>. KIZAZI Phenomenal exists to
-                        help young people across East Africa meet Jesus, grow deep roots, find their purpose and
-                        light up their schools, campuses, workplaces and cities.</p>
+                        <p class="text-muted mt-4">&ldquo;Kizazi&rdquo; is Swahili for <em>generation</em>. We grew out of a network of
+                        <strong>ministers&rsquo; kids</strong> united to inspire, serve and impact our generation &mdash; and we believe
+                        this generation isn't the &ldquo;church of tomorrow&rdquo; &mdash; we're the church of <strong>right now</strong>.
+                        KIZAZI Phenomenal exists to help young people across East Africa meet Jesus, grow deep roots,
+                        find their purpose and light up their schools, campuses, workplaces and cities.</p>
                         <div class="row g-3 mt-2">
                             <div class="col-md-6"><h6 class="mb-2"><i class="fas fa-check-circle me-2" style="color:var(--kz-violet)"></i>Bible-centred, Spirit-filled teaching</h6></div>
                             <div class="col-md-6"><h6 class="mb-2"><i class="fas fa-check-circle me-2" style="color:var(--kz-magenta)"></i>Worship you can actually feel</h6></div>
@@ -133,7 +135,7 @@ def home():
             </div>
         </section>
         <!-- Service End -->
-""" % (heading("What we do", "Eight ways we move",
+""" % (heading("What we do", "Six ways we move",
                "Every ministry is a doorway. Flip a card over, pick one, jump in, and watch God use you."),
        "".join(flip_card(m) for m in MINISTRIES))
 
@@ -215,28 +217,27 @@ def home():
        "".join(voice_card(v) for v in VOICES))
 
     return page("KIZAZI Phenomenal — A Generation On Fire For God",
-                "KIZAZI Phenomenal is a youth ministry movement across East Africa: worship, the Word, real community, purpose and outreach. Join us every Friday online.",
+                "KIZAZI Phenomenal is a growing network of ministers' kids and young people across East Africa: worship, the Word, real community, purpose and outreach. Join us every Friday online.",
                 "home",
                 hero + about + services + programs + events + blog + team + voices)
 
 
 # =============================================================== SHARED =====
+# Real ministry interest areas, per the KIZAZI PHENOMENAL member registration form.
 MINISTRIES = [
-    ("fas fa-music", "", "Worship & The Word", "Loud, honest, Spirit-led worship and Bible teaching that answers real questions &mdash; not just religious slogans."),
-    ("fas fa-seedling", "gold", "Discipleship Cells", "Small weekly groups in towns and on campuses where we do life together, study the Word and keep each other accountable."),
-    ("fas fa-hands-praying", "mint", "Prayer & Intercession", "A house of prayer for a generation. We contend for our families, cities and nations &mdash; and we expect answers."),
-    ("fas fa-video", "", "Friday Online Catch-Up", "Our weekly digital family night. Word, worship, chats and check-ins from wherever you are in East Africa."),
-    ("fas fa-globe-africa", "gold", "Outreach & Missions", "Street evangelism, school visits, community care and cross-border missions. Faith with hands and feet."),
-    ("fas fa-palette", "mint", "Creative & Media Lab", "Music, film, design, spoken word and content. We raise creators who tell God's story beautifully."),
-    ("fas fa-briefcase", "", "Mentorship & Career", "Older-and-wiser believers walking with you through school, work, business and life decisions."),
-    ("fas fa-hand-holding-heart", "gold", "Community & Care", "Nobody walks alone. Practical support, counselling referrals and a family that shows up."),
+    ("fas fa-bible", "", "Preaching", "The Word handled with reverence and fire &mdash; messages that answer real questions and call a generation higher."),
+    ("fas fa-music", "gold", "Worship", "Loud, honest, Spirit-led worship. Singers, musicians and worshippers leading the family into God's presence."),
+    ("fas fa-broadcast-tower", "mint", "Media &amp; Tech", "Cameras, sound, design, livestreams and content &mdash; the crew that carries the message beyond the room."),
+    ("fas fa-globe-africa", "", "Outreach &amp; Evangelism", "Street evangelism, school and community visits, and cross-border teams. Faith with hands and feet."),
+    ("fas fa-hands-praying", "gold", "Prayer &amp; Intercession", "A house of prayer for a generation. We contend for our families, cities and nations &mdash; and we expect answers."),
+    ("fas fa-user-graduate", "mint", "Mentorship", "Older-and-wiser believers walking with you through school, ministry, career and life decisions."),
 ]
 
 
 def flip_card(m):
     """BabyCare service card -> 3D flip. Front: icon + title. Back: why + link."""
     icon, tone, title, body = m
-    return ('<div class="col-md-6 col-lg-6 col-xl-3"><div class="kz-flip h-100">'
+    return ('<div class="col-md-6 col-lg-4 col-xl-4"><div class="kz-flip h-100">'
             '<div class="kz-flip-inner">'
             '<div class="kz-flip-face kz-flip-front">'
             '<div class="kz-icon %s"><i class="%s"></i></div>'
@@ -445,7 +446,8 @@ def about_page():
                         <p class="text-muted mt-4">KIZAZI Phenomenal began with a simple conviction: this generation
                         is not a problem to manage &mdash; it's a powerhouse to release. What started as young people
                         gathering to seek God has grown into a family stretching across Kenya, Uganda, Tanzania and
-                        Rwanda, meeting in person and every Friday online.</p>
+                        Rwanda, meeting in person and every Friday online. Today we're a growing network of
+                        <strong>ministers&rsquo; kids</strong> &mdash; united to inspire, serve and impact our generation.</p>
                         <p class="text-muted">We're not tied to one building. We're a movement &mdash; in cells, on campuses,
                         in group chats, on calls and at conferences &mdash; carried by one heartbeat:
                         <strong>to see a phenomenal generation raised for Jesus in East Africa.</strong></p>
@@ -527,7 +529,7 @@ def ministries_page():
             </div>
         </section>
 """ % (heading("Ministries", "Every gift has a home here",
-               "Eight ministries, one mission. Flip a card &mdash; wherever you're wired, there's a place for you to serve and grow."),
+               "Six ministries, one mission. Flip a card &mdash; wherever you're wired, there's a place for you to serve and grow."),
        "".join(flip_card(m) for m in MINISTRIES),
        cta_panel("Not sure where to plug in?",
                  "Register and tell us your gift &mdash; we'll match you to a team.",

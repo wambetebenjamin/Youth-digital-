@@ -12,17 +12,24 @@ Everything marked ⚠️ is a drafting assumption — edit freely in `tools/buil
 - "Linktree will be up soon" → shown as a small topbar note.
 - Drive folder = **KIZAZI 2026**, photos dated **14–15 Aug 2026** → used as the flagship
   past event ("KIZAZI 2026 — two days").
+- ✅ **Identity (from the registration form itself):** *"a growing network of Ministers Kids
+  united to inspire, serve, and impact our generation"* — now woven into the hero + About copy.
+- ✅ **Real ministry interest areas (from the registration form):** **Preaching, Worship,
+  Media/Tech, Outreach & Evangelism, Prayer & Intercession, Mentorship** — the 6 flip cards
+  on the home + ministries pages now use these instead of the earlier 8 proposed ones.
 
 ## ⚠️ Assumptions to confirm / replace
 1. **Friday time** — copy says **8:00 PM EAT**. Change in `tools/build_common.py`/`build.py`
    if different. (The *date* shown on the site is auto-calculated to the next Friday.)
-2. **Stats** — "500+ reached", "4 nations", "52 Fridays", "1 mission" are illustrative
-   counters. Swap in real numbers.
+2. **Stats** — "500+ reached", "4 nations", "52 Fridays", "1 mission" were illustrative
+   counters; the animated stats strip was **dropped from the home page** in the
+   template-order redesign. If you want it back (e.g. on About), send real numbers.
 3. **KIZAZI Conference 2027** — listed as "August 2027, dates soon" (placeholder for the
    next flagship). Replace with the real next event.
-4. **Programme names** — *Rooted, Phenomenal Fridays, KIZAZI Creative Lab, Mentorship
-   Circle, Campus Ambassadors, Serve East Africa* and the **8 ministry names** are
-   proposed structures. Rename/add/remove to match what actually runs.
+4. **Programme names** — the **6 ministry areas are now real** (see above). The six program
+   tracks (*Rooted, Phenomenal Fridays, KIZAZI Creative Lab, Mentorship Circle, Campus
+   Ambassadors, Serve East Africa*) remain proposed structures — rename/add/remove to match
+   what actually runs.
 5. **Testimonies** — the four quotes are illustrative "voices from the fam" (initial-only,
    no real names used). Replace with real, consented testimonies.
 6. **Blog posts** — titles/excerpts are drafted starters; bodies not yet written.
